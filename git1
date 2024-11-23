@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS VPC with subnets and an internet gateway
+
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "10.0.0.0/16"  # CIDR block for the VPC
+      EnableDnsSupport: "true"
+      EnableDnsHostnames: "true"
+      Tags:
+        - Key: Name
+          Value: "MyVPC"
+
+  MyInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: "MyInternetGateway"
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref MyInternetGateway
+
+  MyPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "10.0.1.0/24"  # CIDR block for the subnet
+      AvailabilityZone: "us-east-1a"  # Availability zone for the subnet
+      MapPublicIpOnLaunch: "true"  # Automatically assign public IPs to instances
+      Tags:
+        - Key: Name
+          Value: "MyPublicSubnet"
+
+  MyPrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyVPC
+      CidrBlock: "10.0.2.0/24"  # CIDR block for private subnet
+      AvailabilityZone: "us-east-1b"  # Availability zone for the subnet
+      Tags:
+        - Key: Name
+          Value: "MyPrivateSubnet"
+
+Outputs:
+  VpcId:
+    Description: "VPC ID"
+    Value: !Ref MyVPC
+
+  InternetGatewayId:
+    Description: "Internet Gateway ID"
+    Value: !Ref MyInternetGateway
+
